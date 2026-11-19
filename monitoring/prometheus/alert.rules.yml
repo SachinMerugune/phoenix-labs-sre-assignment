@@ -1,0 +1,38 @@
+groups:
+  - name: slo_alerts
+    rules:
+      # SLO 1: API Availability (< 99% over 5m)
+      - alert: HighErrorRate
+        expr: (sum(rate(http_requests_total{status_code=~"5.."}[5m])) / sum(rate(http_requests_total[5m]))) > 0.01
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "API Error rate > 1%"
+
+      # SLO 2: API Latency P95 > 500ms
+      - alert: HighLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 Latency > 500ms"
+
+      # SLO 3: Worker Stalled Alert (Pending queue growing or no processing)
+      - alert: WorkerStalled
+        expr: payments_pending_count > 0 and rate(payments_processed_total{status="completed"}[1m]) == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker is stalled: pending payments accumulating without being processed"
+
+      # Alert: Telemetry Missing
+      - alert: TelemetryMissing
+        expr: up == 0
+        for: 15s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service target is down / telemetry lost"

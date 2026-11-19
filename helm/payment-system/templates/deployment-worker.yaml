@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-worker
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: payment-worker
+  template:
+    metadata:
+      labels:
+        app: payment-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: worker
+          image: "{{ .Values.worker.image.repository }}:{{ .Values.worker.image.tag }}"
+          imagePullPolicy: {{ .Values.worker.image.pullPolicy }}
+          ports:
+            - containerPort: 3001
+          env:
+            - name: PORT
+              value: "3001"
+            - name: POLL_INTERVAL_MS
+              value: "2000"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: payment-secrets
+                  key: DATABASE_URL
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-worker-service
+spec:
+  type: {{ .Values.worker.service.type }}
+  ports:
+    - port: {{ .Values.worker.service.port }}
+      targetPort: 3001
+      nodePort: {{ .Values.worker.service.nodePort }}
+  selector:
+    app: payment-worker

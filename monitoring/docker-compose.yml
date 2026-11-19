@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: phoenix-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alert.rules.yml:/etc/prometheus/alert.rules.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: phoenix-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - "3002:3000"
+    depends_on:
+      - prometheus
