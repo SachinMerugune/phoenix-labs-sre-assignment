@@ -2,6 +2,8 @@
 
 A production-ready, local Kubernetes deployment of a high-integrity Payment & CRM processing system with full observability, SLO monitoring, automated fault injection, and zero-duplicate recovery guarantees.
 
+> 🎥 **Video Walkthrough (Loom):** [Watch the Full Demonstration on Loom](https://www.loom.com/share/3b7bce175d8c409e875203cf97dae55c)
+
 ---
 
 ## 🏛️ Architecture Overview
@@ -152,7 +154,7 @@ In alignment with Phoenix Labs' transparency guidelines:
 ---
 
 ## 🎥 Loom Video Walkthrough
-- **Loom URL**: [Link will be added prior to submission]
+- **Loom URL**: [https://www.loom.com/share/3b7bce175d8c409e875203cf97dae55c](https://www.loom.com/share/3b7bce175d8c409e875203cf97dae55c)
 - **Contents**:
   1. Repository architecture walkthrough
   2. Live `make up` and cluster inspection
