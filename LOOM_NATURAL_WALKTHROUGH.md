@@ -89,40 +89,57 @@ For every single part, you have:
 
 ---
 
-# PART 3: Live Traffic, Prometheus & SLOs (8:00 – 12:00)
+# PART 3: Live Traffic, Observability (Prometheus & Grafana) & SLOs (8:00 – 12:00)
 
 ### 🖥️ [SCREEN ACTION]
 1. Open your **Browser**.
-2. Open tab: `http://localhost:9090` (Prometheus).
-3. Click on top menu: **Status ➔ Targets**.
-4. **Point your mouse cursor** to the two blue **`UP`** badges for `payment-api` and `payment-worker`.
-5. Now open tab: `http://localhost:3002` (Grafana).
-   - Go to **Dashboards** (or click direct URL: `http://localhost:3002/d/phoenix-sre-overview/phoenix-labs-sre-golden-signals-and-slos`).
-   - Show the 4 live panels: **Pending Payments in Queue**, **Total Completed Payments**, **API Request Rate**, and **P95 Latency**.
-6. Switch to **Git Bash terminal** and run: `./scripts/seed.sh 5`
-7. Show the 5 payments being created and then showing status `completed`. Watch the Grafana numbers jump!
-8. Switch back to **VS Code** and open `README.md` at the **SLO table**.
+2. Tab 1: `http://localhost:9090` (Prometheus).
+   - Go to **Status ➔ Targets**.
+   - **Point your mouse cursor** to the two blue **`UP`** badges for `payment-api` and `payment-worker`.
+3. Tab 2: `http://localhost:3002` (Grafana).
+   - Open the dashboard: **Phoenix Labs — SRE Golden Signals & SLOs** (direct link: `http://localhost:3002/d/phoenix-sre-overview/phoenix-labs-sre-golden-signals-and-slos`).
+   - **Point your mouse** to each of the 4 panels:
+     1. Top-left: **Pending Payments in Queue** (green `0`)
+     2. Top-middle: **Total Completed Payments**
+     3. Top-right: **API Request Rate (req/s)**
+     4. Bottom: **API P95 Latency**
+4. Switch to **Git Bash terminal** and run:
+   ```bash
+   ./scripts/seed.sh 5
+   ```
+5. Show the 5 payments being created and completed in terminal.
+6. Switch back to **Grafana tab** and refresh (or let it auto-refresh every 5s) to show the completed counter increase and request spikes!
+7. Switch back to **VS Code** and open `README.md` at the **SLO table**.
 
 ### 🎙️ [WHAT TO SAY]
-> *"Now let's look at monitoring and how we track our Service Level Objectives, or SLOs.*
+> *"Now let's look at monitoring, Grafana dashboards, and how we track our Service Level Objectives, or SLOs.*
 >
-> *(Switch to Browser, show Prometheus Targets page)*
->
+> *(Show Prometheus Targets page in Browser)*
 > *Here in Prometheus at `localhost:9090`, under Status -> Targets, you can see Prometheus is actively scraping both of our services:*
-> - *`payment-api` on port 3000 is **UP** (point mouse).*
-> - *`payment-worker` on port 3001 is **UP** (point mouse).*
+> - *`payment-api` on port 3000 is **UP**.*
+> - *`payment-worker` on port 3001 is **UP**.*
 >
-> *Now let's generate some real traffic to see how the system handles it.*
+> *(Switch tab to Grafana at `localhost:3002`)*
+> *Next, let's look at **Grafana**. Prometheus collects the raw metrics, but as SREs, we use Grafana to visualize everything on a clean dashboard.*
 >
-> *(Switch to Terminal, run `./scripts/seed.sh 5`)*
+> *(Point mouse to each of the 4 panels as you speak)*:
+> - *First, on the top-left, we have **Pending Payments in Queue**. It is green right now because it is zero. If payments get stuck, this panel turns bright red to warn us.*
+> - *Second, we have **Total Completed Payments**, tracking successful CRM transactions.*
+> - *Third, we have **API Request Rate**, showing incoming HTTP requests per second.*
+> - *And fourth, we have **API P95 Latency**, tracking response times.*
 >
-> *I run `./scripts/seed.sh 5`. This script sends 5 payment requests to our API.*
+> *(Switch to Git Bash Terminal)*
+> *Now, let's send some real traffic into the system using our seed script.*
+> *(Run `./scripts/seed.sh 5`)*
 > *(Point mouse at the terminal as it prints):*
 > *You can see payment 1, 2, 3, 4, 5 are created with status `pending`. Then the worker picks them up, and within 2 seconds, all 5 payments become `completed` in PostgreSQL.*
 >
-> *(Switch to VS Code, show SLO table in README.md)*
+> *(Switch back to Grafana tab)*
+> *(Point mouse at Total Completed Payments and API Request Rate)*:
+> *Switching back to Grafana, you can see our Total Completed count just went up, and the API request rate spiked to reflect the new traffic.*
 >
-> *For this project, we defined three important SLOs:*
+> *(Switch to VS Code, show SLO table in README.md)*
+> *Based on the assignment requirements, we track three important SLOs:*
 > 1. *(Point to SLO 1)*: ***API Availability (99%)**: Over 99% of user requests must return a successful response, not a 500 error.*
 > 2. *(Point to SLO 2)*: ***API Latency (P95 under 500 milliseconds)**: 95% of our users should get a response in under half a second. We look at P95 instead of average because average hides the slow requests.*
 > 3. *(Point to SLO 3)*: ***Business SLO (Payments completed within 120 seconds)**: As an SRE, we also care about the business. When a user pays, the background CRM update must complete in under 120 seconds. If payments stay stuck in `pending` longer than that, it means our worker is failing, and an alert must fire."*
