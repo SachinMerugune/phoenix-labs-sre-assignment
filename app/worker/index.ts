@@ -52,6 +52,12 @@ app.get('/health', async (_req: Request, res: Response) => {
 });
 
 app.get('/metrics', async (_req: Request, res: Response) => {
+  try {
+    const countRes = await pool.query("SELECT COUNT(*) FROM payments WHERE status = 'pending'");
+    paymentsPendingGauge.set(parseInt(countRes.rows[0].count, 10));
+  } catch (err) {
+    console.error('Error updating pending count for metrics:', err);
+  }
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
 });

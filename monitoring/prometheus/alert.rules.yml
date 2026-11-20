@@ -21,8 +21,8 @@ groups:
 
       # SLO 3: Worker Stalled Alert (Pending queue growing or no processing)
       - alert: WorkerStalled
-        expr: payments_pending_count > 0 and rate(payments_processed_total{status="completed"}[1m]) == 0
-        for: 30s
+        expr: payments_pending_count > 0
+        for: 15s
         labels:
           severity: critical
         annotations:
