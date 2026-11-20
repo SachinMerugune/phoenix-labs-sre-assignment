@@ -96,9 +96,12 @@ For every single part, you have:
 2. Open tab: `http://localhost:9090` (Prometheus).
 3. Click on top menu: **Status ➔ Targets**.
 4. **Point your mouse cursor** to the two blue **`UP`** badges for `payment-api` and `payment-worker`.
-5. Switch to **Git Bash terminal** and run: `./scripts/seed.sh 5`
-6. Show the 5 payments being created and then showing status `completed`.
-7. Switch back to **VS Code** and open `README.md` at the **SLO table**.
+5. Now open tab: `http://localhost:3002` (Grafana).
+   - Go to **Dashboards** (or click direct URL: `http://localhost:3002/d/phoenix-sre-overview/phoenix-labs-sre-golden-signals-and-slos`).
+   - Show the 4 live panels: **Pending Payments in Queue**, **Total Completed Payments**, **API Request Rate**, and **P95 Latency**.
+6. Switch to **Git Bash terminal** and run: `./scripts/seed.sh 5`
+7. Show the 5 payments being created and then showing status `completed`. Watch the Grafana numbers jump!
+8. Switch back to **VS Code** and open `README.md` at the **SLO table**.
 
 ### 🎙️ [WHAT TO SAY]
 > *"Now let's look at monitoring and how we track our Service Level Objectives, or SLOs.*
