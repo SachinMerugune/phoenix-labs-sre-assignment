@@ -42,7 +42,7 @@
       "datasource": "Prometheus",
       "targets": [
         {
-          "expr": "sum(payments_processed_total{status=\"completed\"}) or vector(0)",
+          "expr": "payments_completed_count",
           "refId": "A"
         }
       ],

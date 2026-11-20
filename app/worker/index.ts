@@ -28,6 +28,11 @@ const paymentsPendingGauge = new client.Gauge({
   help: 'Current count of pending payments waiting in database'
 });
 
+const paymentsCompletedGauge = new client.Gauge({
+  name: 'payments_completed_count',
+  help: 'Total completed payments in database'
+});
+
 const paymentProcessingDuration = new client.Histogram({
   name: 'payment_processing_duration_seconds',
   help: 'Time taken to process payment and update CRM',
@@ -36,6 +41,7 @@ const paymentProcessingDuration = new client.Histogram({
 
 register.registerMetric(paymentsProcessedTotal);
 register.registerMetric(paymentsPendingGauge);
+register.registerMetric(paymentsCompletedGauge);
 register.registerMetric(paymentProcessingDuration);
 
 // Worker HTTP Server for health and metrics
@@ -53,10 +59,13 @@ app.get('/health', async (_req: Request, res: Response) => {
 
 app.get('/metrics', async (_req: Request, res: Response) => {
   try {
-    const countRes = await pool.query("SELECT COUNT(*) FROM payments WHERE status = 'pending'");
-    paymentsPendingGauge.set(parseInt(countRes.rows[0].count, 10));
+    const pendingRes = await pool.query("SELECT COUNT(*) FROM payments WHERE status = 'pending'");
+    paymentsPendingGauge.set(parseInt(pendingRes.rows[0].count, 10));
+
+    const completedRes = await pool.query("SELECT COUNT(*) FROM payments WHERE status = 'completed'");
+    paymentsCompletedGauge.set(parseInt(completedRes.rows[0].count, 10));
   } catch (err) {
-    console.error('Error updating pending count for metrics:', err);
+    console.error('Error updating counts for metrics:', err);
   }
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
