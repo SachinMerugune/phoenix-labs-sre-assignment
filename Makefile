@@ -1,4 +1,4 @@
-.PHONY: preflight up seed verify fault recover down clean
+.PHONY: preflight up seed verify fault recover down clean status
 
 SHELL := /usr/bin/env bash
 
@@ -38,6 +38,9 @@ fault: ## Inject worker stall failure scenario
 
 recover: ## Recover from worker stall failure scenario
 	@./scripts/recover.sh worker-stall
+
+status: ## Query current payment counts in database
+	@kubectl exec deployment/postgres -- psql -U postgres -d payments_db -c "SELECT status, count(*) FROM payments GROUP BY status;"
 
 down: ## Teardown all resources (helm, cluster, monitoring)
 	@echo "==> [DOWN] Tearing down monitoring stack..."
